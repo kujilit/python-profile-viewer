@@ -186,6 +186,8 @@ def main():
             .sort_values("total_time_s", ascending=False)
         )
 
+        func_summary["pct"] = func_summary["total_time_s"] / func_summary["total_time_s"].sum() * 100
+
         st.dataframe(func_summary, use_container_width=True)
 
     with cols[1]:
@@ -259,29 +261,38 @@ def main():
             df_code = pd.DataFrame(code_rows)
 
             with st.expander(f"📂 {sel_func} — {file_name}:{start_line}"):
+
                 highlighted = ""
                 for _, row in df_code.iterrows():
-                    color = ""
+                    color_style = ""
                     if row["Time (s)"] > 0 and max_time > 0:
                         hue = row["Time (s)"] / max_time
                         red = int(255 * hue)
-                        color = f"background-color: rgba({red}, 80, 80, 0.35);"
+                        color_style = f"background-color: rgba({red}, 80, 80, 0.35);"
+
+                    time_label = f"{row['Time (s)']:.4f}s" if row["Time (s)"] > 0 else "        "
+                    hits_label = f"×{row['Hits']}" if row["Hits"] > 0 else "   "
 
                     highlighted += (
-                        f"<div style='{color} font-family: monospace;'>"
-                        f"{row['Line']:4d}  {row['Code']}"
+                        f"<div style='{color_style} font-family: monospace; padding: 1px 6px; white-space: pre;'>"
+                        f"<span style='color: #888; user-select: none;'>{row['Line']:4d}  "
+                        f"{time_label:>10}  {hits_label:>6}  </span>"
+                        f"{row['Code']}"
                         f"</div>"
                     )
 
                 st.markdown(highlighted, unsafe_allow_html=True)
 
                 fig2 = px.bar(
-                    df_code,
+                    df_code[df_code["Time (s)"] > 0],
                     x="Line",
                     y="Time (s)",
+                    hover_data=["Hits", "Code"],
                     title="Нагрузка по строкам",
+                    color="Time (s)",
+                    color_continuous_scale="Reds",
                 )
-
+                fig2.update_layout(showlegend=False)
                 st.plotly_chart(fig2, use_container_width=True)
 
 
