@@ -7,6 +7,8 @@ import time
 import random
 import numpy as np
 
+from line_profiler import profile
+
 # Для использования с kernprof -l test_profile.py
 # @profile
 def slow_function(n=1000000):
@@ -16,12 +18,12 @@ def slow_function(n=1000000):
         total += i * i
     return total
 
-# @profile  
+@profile  
 def fast_function():
     """Быстрая функция для профилирования."""
     return sum(range(100))
 
-# @profile
+@profile
 def matrix_operations(size=100):
     """Операции с матрицами для профилирования."""
     # Создаем случайные матрицы
@@ -37,7 +39,7 @@ def matrix_operations(size=100):
     
     return np.sum(C), np.sum(D), np.sum(E)
 
-# @profile
+@profile
 def fibonacci(n):
     """Рекурсивный расчет числа Фибоначчи (неэффективно для больших n)."""
     if n <= 1:

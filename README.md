@@ -27,7 +27,7 @@ kernprof -b -l <path>/<script_name>.py
 ```
 - Запустите streamlit_viewer из корня проекта
 ```bash 
-	streamlit run streamlit_viewer.py
+	streamlit run app.py
 ```
 
 ## Использование
